@@ -6,7 +6,7 @@ export default function App() {
   const [preview, setPreview] = useState(null);
   const [resultImage, setResultImage] = useState(null);
 
-  const API_URL = "https://testpython-hjcy.onrender.com/"; // Your FastAPI backend URL
+  const API_URL = "https://testpython-hjcy.onrender.com"; // Your FastAPI backend URL
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
