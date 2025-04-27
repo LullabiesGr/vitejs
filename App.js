@@ -21,33 +21,35 @@ export default function App() {
   };
 
   const sendToAPI = async (endpoint) => {
-    if (!selectedFile) return;
+  if (!selectedFile) return;
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
+  const formData = new FormData();
+  formData.append("file", selectedFile);
 
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/${endpoint}`, {
-        method: "POST",
-        body: formData,
-      });
+  setLoading(true);
 
-      const data = await response.json();
+  try {
+    const response = await fetch(`${API_URL}/${endpoint}`, {
+      method: "POST",
+      body: formData,
+    });
 
-      if (endpoint === "blur_score") {
-        setBlurScore(data.blur_score);
-      } else if (data.image_base64) {
-        setResultImage(`data:image/jpeg;base64,${data.image_base64}`);
-      } else {
-        alert(JSON.stringify(data));
-      }
-    } catch (error) {
-      alert("API Error: " + error.message);
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+    
+    if (data.image_base64) {
+      setResultImage(`data:image/jpeg;base64,${data.image_base64}`);
+    } else if (data.blur_score) {
+      setBlurScore(data.blur_score);
+    } else {
+      alert(JSON.stringify(data));
     }
-  };
+  } catch (error) {
+    alert("API Error: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="App" style={{ padding: "2rem", fontFamily: "sans-serif" }}>
@@ -61,12 +63,17 @@ export default function App() {
       )}
 
       <div style={{ marginTop: 20, display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        <button onClick={() => sendToAPI("sharpen_image")}>Sharpen</button>
-        <button onClick={() => sendToAPI("denoise_image")}>Denoise</button>
-        <button onClick={() => sendToAPI("cartoonify_image")}>Cartoonify</button>
-        <button onClick={() => sendToAPI("white_balance_fix")}>White Balance</button>
-        <button onClick={() => sendToAPI("blur_score")}>Blur Score</button>
-      </div>
+  <button onClick={() => sendToAPI("sharpen_image")}>Sharpen</button>
+  <button onClick={() => sendToAPI("denoise_image")}>Denoise</button>
+  <button onClick={() => sendToAPI("cartoonify_image")}>Cartoonify</button>
+  <button onClick={() => sendToAPI("white_balance_fix")}>White Balance</button>
+  <button onClick={() => sendToAPI("blur_score")}>Blur Score</button> {/* New */}
+  <button onClick={() => sendToAPI("smart_rank_photos")}>Smart Rank</button> {/* New */}
+  <button onClick={() => sendToAPI("auto_crop_face")}>Auto Crop Face</button> {/* New */}
+  <button onClick={() => sendToAPI("detect_closed_eyes")}>Detect Closed Eyes</button> {/* New */}
+  <button onClick={() => sendToAPI("detect_pose_smile")}>Detect Pose & Smile</button> {/* New */}
+</div>
+
 
       {loading && <p>Loading...</p>}
 
