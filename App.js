@@ -8,25 +8,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [blurScore, setBlurScore] = useState(null);
 
-  const API_URL = "https://testpython-hjcy.onrender.com"; // Your backend URL
+  const API_URL = "https://testpython-hjcy.onrender.com";  // ✅ Your deployed backend URL
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setSelectedFile(file);
-    setResultImage(null);
-    setBlurScore(null);
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const sendToAPI = async (endpoint) => {
+const sendToAPI = async (endpoint) => {
   if (!selectedFile) return;
 
   const formData = new FormData();
   formData.append("file", selectedFile);
-
-  setLoading(true);
 
   try {
     const response = await fetch(`${API_URL}/${endpoint}`, {
@@ -34,19 +22,20 @@ export default function App() {
       body: formData,
     });
 
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
+
     const data = await response.json();
-    
+
     if (data.image_base64) {
       setResultImage(`data:image/jpeg;base64,${data.image_base64}`);
-    } else if (data.blur_score) {
-      setBlurScore(data.blur_score);
     } else {
-      alert(JSON.stringify(data));
+      alert("No image returned from API");
     }
   } catch (error) {
-    alert("API Error: " + error.message);
-  } finally {
-    setLoading(false);
+    console.error("API Error:", error);
+    alert("Failed to reach the API: " + error.message);
   }
 };
 
